@@ -1,0 +1,15 @@
+CONTANT:
+  REDIS_IP: 59.110.68.237
+  SQL_IP: localhost
+  SQLPASSWORD: 123
+  SQLUSERNAME: root
+
+spring:
+  profiles:
+    active: 8888
+  redis:
+    host: ${CONTANT.REDIS_IP}
+    port: 1111
+    timeout: 30000
+    password: 123
+    database: 15
