@@ -61,6 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         SecurityConstant.SWAGGER,
                         SecurityConstant.REGISTER_ACCOUNT,
                         SecurityConstant.UPDATEPASSWORD,
+                        SecurityConstant.WX_LOGIN,
+                        SecurityConstant.WC_REGISTER,
                         "/v2/api-docs",
                         "/swagger-resources",
                         "/swagger-resources/**",

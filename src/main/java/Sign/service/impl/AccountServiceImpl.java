@@ -3,6 +3,7 @@ package Sign.service.impl;
 import Sign.entity.Account;
 import Sign.mapper.AccountMapper;
 import Sign.service.AccountService;
+import Sign.service.HttpClient;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,10 +25,11 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
     @Autowired
     AccountMapper accountMapper;
 
+
     @Override
-    public Account accountSelectOne(String username) {
+    public Account accountSelectOne(String column,String string) {
         QueryWrapper<Account> wrapper=new QueryWrapper();
-        wrapper.eq("username",username);
+        wrapper.eq(column,string);
         Account account = accountMapper.selectOne(wrapper);
         return account;
     }

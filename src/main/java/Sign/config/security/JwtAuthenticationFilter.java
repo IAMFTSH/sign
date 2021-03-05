@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter implements Ini
                     //
                         Account account = (Account) redisTemplate.opsForValue().get("account:" + username);
                         if (account == null) {
-                            account = accountService.accountSelectOne(username);
+                            account = accountService.accountSelectOne("username",username);
                             redisTemplate.opsForValue().set("account:" + username, account, 1, TimeUnit.DAYS);
                         }
                         if (passwordEncoder.matches(password, account.getPassword())) {

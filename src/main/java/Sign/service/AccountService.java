@@ -14,5 +14,5 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 public interface AccountService extends IService<Account> , UserDetailsService {
 
-    Account accountSelectOne(String username);
+    Account accountSelectOne(String column,String string);
 }

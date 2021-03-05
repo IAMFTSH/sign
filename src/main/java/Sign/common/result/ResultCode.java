@@ -16,7 +16,8 @@ public enum ResultCode {
     UNAUTHORIZED(401,"用户未登录，请先登录"),
     FORBIDDEN(403,"访问被禁止"),
     NOT_ACCEPTABLE(406 ,"用户请求的格式不可得"),
-    SYSTEM_INNER_ERROR(500, "系统繁忙，请稍后重试");
+    SYSTEM_INNER_ERROR(500, "系统繁忙，请稍后重试"),
+    MOVED_PERM(301,"信息已过期");
 
 
     int code;

@@ -6,8 +6,10 @@ package Sign.common.contant;
  */
 public class SecurityConstant {
     public final static String LOGIN = "/toLogin";
+    public final static String WX_LOGIN = "/account/WCLogin";
+    public final static String WC_REGISTER = "/account/WCRegister";
     public final static String UPDATEPASSWORD = "/putAccountPassword";
-    public final static String IMAGE_VALIDATE = "/IMAGEVALIDATE";
+    public final static String IMAGE_VALIDATE = "account/IMAGEVALIDATE";
     public final static String SWAGGER = "/doc.html";
     public final static String REGISTER_ACCOUNT = "/register/account";
 

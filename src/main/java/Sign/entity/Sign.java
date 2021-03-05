@@ -35,5 +35,10 @@ public class Sign implements Serializable {
     @ApiModelProperty(value = "状态")
     private Integer state;
 
+    @ApiModelProperty(value = "状态")
+    private String reason;
+
+    @ApiModelProperty(value = "状态")
+    private String imageAddress;
 
 }

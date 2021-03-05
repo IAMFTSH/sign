@@ -1,5 +1,6 @@
 package Sign.config.util;
 
+import Sign.entity.VO.OpenId;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -34,7 +35,23 @@ public class JWTUtils {
                 .sign(SIGN);
     }
 
-
+    public String createOpenIdToken(OpenId openId){
+        Map<String,String> claims= new HashMap<>();
+        claims.put("openId", openId.getOpenid());
+        claims.put("sessionKey", openId.getSession_key());
+/*        StringBuffer stringBuffer=new StringBuffer();
+        for(Object authority:user.getAuthorities().toArray()){
+            if (stringBuffer.length()>0){
+                stringBuffer.append(",");
+            }
+            stringBuffer.append(authority.toString());
+        }
+        claims.put("authorities", stringBuffer.toString());*/
+        return JWT.create()
+                .withExpiresAt(new Date(System.currentTimeMillis() + 24*60 * 60 * 1000))  //设置过期时间
+                .withClaim("principal",claims)
+                .sign(SIGN);
+    }
     public Map<String, Object> parseToken(String token){
         try{
             DecodedJWT verify = JWT.require(SIGN).build().verify(token);
