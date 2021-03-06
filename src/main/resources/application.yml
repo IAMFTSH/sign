@@ -13,3 +13,7 @@ spring:
     timeout: 30000
     password: 123
     database: 15
+    pool:
+      min-idle: 1
+      max-idle: 8
+      max-wait: -1
