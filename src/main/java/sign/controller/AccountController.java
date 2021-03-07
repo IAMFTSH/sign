@@ -2,6 +2,7 @@ package sign.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import sign.common.contant.ProjectConstant;
@@ -95,7 +96,7 @@ public class AccountController {
             return Result.error(ResultCode.UNAUTHORIZED.getCode(), "账户密码不匹配");
         }*/
         Account account = accountService.accountSelectOne("username", username);
-        if (!passwordEncoder.matches(password, account.getPassword())){
+        if (!passwordEncoder.matches(password, account.getPassword())) {
             return Result.error(ResultCode.UNAUTHORIZED.getCode(), "账户密码不匹配");
         }
         UserDetails userDetails = User.builder().username(account.getUsername()).password(account.getPassword()).authorities(AuthorityUtils.commaSeparatedStringToAuthorityList(Integer.toString(account.getAuthority()))).build();
@@ -162,7 +163,7 @@ public class AccountController {
     }
 
     @PutMapping("putAccountPasswordByOldPassword")
-    public Result putAccountPasswordByOldPassword(@RequestParam("password") String password,@RequestParam("oldPassword") String oldPassword ) {
+    public Result putAccountPasswordByOldPassword(@RequestParam("password") String password, @RequestParam("oldPassword") String oldPassword) {
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("username", username);
@@ -180,8 +181,8 @@ public class AccountController {
         return Result.success();
     }
 
-    @PutMapping("putAccount")
-    public Result putAccount(@RequestParam("name") String name, @RequestParam("username") String username,@RequestParam("phone") String phone) {
+    @PutMapping("putAccountByMyself")
+    public Result putAccountByMyself(@RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("phone") String phone) {
         String oldUsername = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("username", oldUsername);
@@ -241,6 +242,7 @@ public class AccountController {
         map.put("Authentication", jwt);
         return Result.success(map);
     }
+
     @GetMapping("getAccountInformation")
     public Result getAccountInformation() {
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
@@ -250,12 +252,57 @@ public class AccountController {
     }
 
     @GetMapping("accountsBySomething")
-    public Result accountsBySomething(String name,String username,String phone,int authority,@RequestParam("pageNum") int pageNum) {
+    public Result accountsBySomething(String name, String username, String phone, int authority, @RequestParam("pageNum") int pageNum) {
+
         QueryWrapper queryWrapper = new QueryWrapper();
         //arg1  当前页    arg2   页大小
-        Page<Account> page=new Page<>(1,5);
-        accountService.page(page,queryWrapper);
+        if (name.length() != 0) {
+            queryWrapper.like("name", name);
+        }
+        if (username.length() != 0) {
+            queryWrapper.like("username", username);
+        }
+        if (phone.length() != 0) {
+            queryWrapper.like("phone", phone);
+        }
+        if(authority!=0) {
+            queryWrapper.eq("authority", authority);
+        }
+        Page<Account> page = new Page<>(pageNum, 10);
+        accountService.page(page, queryWrapper);
+        for(Account account:page.getRecords()){
+            account.setPassword(null);
+            account.setOpenId(null);
+        }
         return Result.success(page);
+    }
+    @PutMapping("putAccount")
+    public Result putAccount(@RequestParam("id") String id,@RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("phone") String phone,@RequestParam("authority")  int authority) {
+        Account account = accountService.getById(id);
+        redisTemplate.delete("jwt:" + account.getUsername());
+        redisTemplate.delete("account:" + account.getUsername());
+        account.setName(name);
+        account.setUsername(username);
+        account.setPhone(phone);
+        account.setAuthority(authority);
+        accountService.updateById(account);
+        return Result.success();
+    }
+    @PostMapping("postAccount")
+    public Result postAccount(@RequestParam("id") String id,@RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("phone") String phone,@RequestParam("authority")  int authority) {
+        Account account=new Account();
+        account.setName(name);
+        account.setUsername(username);
+        account.setPhone(phone);
+        account.setAuthority(authority);
+        account.setPassword(passwordEncoder.encode("123456"));
+        accountService.save(account);
+        return Result.success(account.getId());
+    }
+    @DeleteMapping("deleteAccount")
+    public Result deleteAccount(@RequestParam("id") String id) {
+        accountService.removeById(id);
+        return Result.success();
     }
 }
 
