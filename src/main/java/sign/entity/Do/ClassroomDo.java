@@ -1,8 +1,7 @@
-package sign.entity;
+package sign.entity.Do;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -10,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -21,30 +22,21 @@ import lombok.experimental.Accessors;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Accessors(chain = true)
-@ApiModel(value="Classroom对象", description="课室")
-public class Classroom implements Serializable {
+@ApiModel(value="ClassroomDo对象", description="课室")
+public class ClassroomDo implements Serializable {
 
     private static final long serialVersionUID=1L;
 
-    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @ApiModelProperty(value = "课室号")
     private String classroomNum;
 
-    @ApiModelProperty(value = "所属教学区id")
     private Integer teachingAreaId;
 
-    @ApiModelProperty(value = "经度")
-    private Double lng;
+    private String TeachingAreaName;
 
-    @ApiModelProperty(value = "纬度")
-    private Double lat;
-
-    @ApiModelProperty(value = "范围 ")
-    private Double radius;
 
 }

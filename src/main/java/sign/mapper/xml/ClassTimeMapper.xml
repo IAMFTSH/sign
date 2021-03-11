@@ -1,5 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="sign.mapper.ClassTimeMapper">
-
+    <select id="selectSignAndClassTimeVoList" resultMap="selectSignAndClassTimeVoList">
+        select class_time.id class_time_id,
+               classroom_id,
+               course_id,
+               begin_time,
+               late_time,
+               deadline,
+               sign.id       sign_id,
+               student_id,
+               state,
+               reason,
+               image_address,
+               classroom_num,
+               teaching_area_id,
+               classroom.lng,
+               classroom.lat,
+               classroom.radius,
+               name
+        from class_time
+                     left join sign on class_time.id = sign.class_time_id
+                     left join classroom on class_time.classroom_id = classroom.id
+                     left join teaching_area on classroom.teaching_area_id = teaching_area.id
+        where (ISNULL(student_id) or student_id=#{studentId}) and course_id=#{courseId}
+        order by state,begin_time
+    </select>
+    <resultMap id="selectSignAndClassTimeVoList" type="SignAndClassTimeAndClassroomAndTeachingAreaVo">
+        <result column="class_time_id" property="classTimeId"/>
+        <result column="classroom_id" property="classroomId"/>
+        <result column="course_id" property="courseId"/>
+        <result column="begin_time" property="beginTime"/>
+        <result column="late_time" property="lateTime"/>
+        <result column="deadline" property="deadline"/>
+        <association property="sign" javaType="sign.entity.Sign">
+            <id column="sign_id" property="id"/>
+            <result column="classroom_id" property="classTimeId"/>
+            <result column="student_id" property="studentId"/>
+            <result column="state" property="state"/>
+            <result column="reason" property="reason"/>
+            <result column="image_address" property="imageAddress"/>
+        </association>
+        <association property="classroomVo" javaType="sign.entity.VO.ClassroomVo">
+            <id column="classroom_id" property="id"/>
+            <result column="classroom_num" property="classroomNum"/>
+            <result column="teaching_area_id" property="teachingAreaId"/>
+            <result column="lng" property="lng"/>
+            <result column="lat" property="lat"/>
+            <result column="radius" property="radius"/>
+            <association property="teachingArea" javaType="sign.entity.TeachingArea">
+                <id column="teaching_area_id" property="id"/>
+                <result column="name" property="name"/>
+            </association>
+        </association>
+    </resultMap>
 </mapper>

@@ -10,10 +10,12 @@ spring:
   redis:
     host: ${CONTANT.REDIS_IP}
     port: 1111
-    timeout: 30000
+    timeout: 1000
     password: 123
     database: 15
+  lettuce:
     pool:
+      max-active: 20
+      max-wait: -1ms
+      max-idle: 10
       min-idle: 1
-      max-idle: 8
-      max-wait: -1

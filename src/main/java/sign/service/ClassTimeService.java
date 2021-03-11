@@ -2,6 +2,9 @@ package sign.service;
 
 import sign.entity.ClassTime;
 import com.baomidou.mybatisplus.extension.service.IService;
+import sign.entity.VO.SignAndClassTimeAndClassroomAndTeachingAreaVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-03-04
  */
 public interface ClassTimeService extends IService<ClassTime> {
-
+    /**
+     * 搜索
+     * @param studentId
+     * @param courseId
+     * @return
+     */
+    public List<SignAndClassTimeAndClassroomAndTeachingAreaVo> selectSignAndClassTimeVoList(int studentId, int courseId);
 }

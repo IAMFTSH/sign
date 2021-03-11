@@ -1,7 +1,11 @@
 package sign.mapper;
 
+import sign.entity.Do.ClassroomDo;
 import sign.entity.TeachingArea;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import sign.entity.VO.ClassroomVo;
+
+import java.util.List;
 
 /**
  * <p>

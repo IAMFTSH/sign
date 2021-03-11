@@ -1,9 +1,19 @@
 package sign.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sign.common.result.Result;
+import sign.entity.VO.SignAndClassTimeAndClassroomAndTeachingAreaVo;
+import sign.service.ClassTimeService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -14,8 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2021-03-04
  */
 @RestController
-@RequestMapping("/class-time")
+@RequestMapping("/class_time")
 public class ClassTimeController {
-
+    @Autowired
+    ClassTimeService classTimeService;
+    @GetMapping("getSignAndClassTimeVoList")
+    public Result getSignAndClassTimeVoList(@RequestParam("courseId") int courseId,@RequestParam("studentId") int studentId) {
+        List<SignAndClassTimeAndClassroomAndTeachingAreaVo> signAndClassTimeAndClassroomAndTeachingAreaVoList = classTimeService.selectSignAndClassTimeVoList(studentId, courseId);
+        return Result.success(signAndClassTimeAndClassroomAndTeachingAreaVoList);
+    }
 }
 

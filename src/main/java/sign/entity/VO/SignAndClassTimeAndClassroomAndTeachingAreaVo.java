@@ -1,37 +1,32 @@
-package sign.entity;
+package sign.entity.VO;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import sign.entity.Sign;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
- * <p>
- * 上课时间信息
- * </p>
- *
  * @author 邝明山
- * @since 2021-03-04
+ * on 2021/3/10 9:06
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
 @Accessors(chain = true)
-@ApiModel(value="ClassTime对象", description="上课时间信息")
-public class ClassTime implements Serializable {
-
-    private static final long serialVersionUID=1L;
-
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+@ApiModel(value="SignAndClassTimeAndClassroomAndTeachinAreaVo", description="学生签到信息与上课时间")
+public class SignAndClassTimeAndClassroomAndTeachingAreaVo implements Serializable {
+    private Integer classTimeId;
 
     @ApiModelProperty(value = "课室id ")
     private Integer classroomId;
@@ -48,5 +43,9 @@ public class ClassTime implements Serializable {
     @ApiModelProperty(value = "最后签掉时间")
     private LocalDateTime  deadline;
 
+    @ApiModelProperty(value = "Sign表")
+    private Sign sign;
 
+    @ApiModelProperty(value = "Sign表")
+    private ClassroomVo classroomVo;
 }

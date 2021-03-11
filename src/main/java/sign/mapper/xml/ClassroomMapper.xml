@@ -1,5 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="sign.mapper.ClassroomMapper">
-
+    <resultMap id="selectClassroomAndTeachingArea" type="sign.entity.VO.ClassroomVo">
+        <id column="id" property="id"/>
+        <result column="classroom_num" property="classroomNum"/>
+        <result column="teaching_area_id" property="teachingAreaId"/>
+        <result column="lng" property="lng"/>
+        <result column="lat" property="lat"/>
+        <result column="radius" property="radius"/>
+        <association property="teachingArea" javaType="sign.entity.TeachingArea">
+            <id column="teaching_area_id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="teaching_area_lng" property="lng"/>
+            <result column="teaching_area_lat" property="lat"/>
+            <result column="teaching_area_radius" property="radius"/>
+        </association>
+    </resultMap>
+    <select id="selectClassroomAndTeachingArea" resultMap="selectClassroomAndTeachingArea"
+            >
+        select classroom.id,
+        classroom.classroom_num,
+        classroom.teaching_area_id,
+        classroom.lng,
+        classroom.lat,
+        classroom.radius,
+        teaching_area.id teaching_area_id,
+        teaching_area.name,
+        teaching_area.lng teaching_area_lng,
+        teaching_area.lat teaching_area_lat,
+        teaching_area.radius teaching_area_radius
+        from classroom
+        left join teaching_area on classroom.teaching_area_id = teaching_area.id
+        <where>
+            <if test="classroomDo.id != null and classroomDo.id != '' and classroomDo.id!=0">
+                and classroom.id = #{classroomDo.id}
+            </if>
+            <if test="classroomDo.classroomNum != null and classroomDo.classroomNum != ''">
+                and classroom.classroom_num like concat('%',#{classroomDo.classroomNum},'%')
+            </if>
+            <if test="classroomDo.TeachingAreaName != null and classroomDo.TeachingAreaName != ''">
+                and teaching_area.name like concat('%',#{classroomDo.TeachingAreaName},'%')
+            </if>
+            <if test="classroomDo.teachingAreaId != null and classroomDo.teachingAreaId != ''">
+                and teaching_area.id = #{classroomDo.teachingAreaId}
+            </if>
+        </where>
+    </select>
 </mapper>

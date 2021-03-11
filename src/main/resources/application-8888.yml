@@ -39,5 +39,5 @@ mybatis-plus:
       # 如果公司代码比较规范，比如统一了全局都是flag为逻辑删除字段。
       #使用此配置则不需要在实体类上添加 @TableLogic。
       #但如果实体类上有 @TableLogic 则以实体上的为准，忽略全局。 即先查找注解再查找全局，都没有则此表没有逻辑删除。
-  mapper-locations: classpath*:/Sign/mapper/xml/*.xml             #***********Mapper.xml包路径*****************   按实际情况作出改动
+  mapper-locations: classpath*:/sign/mapper/xml/*.xml             #***********Mapper.xml包路径*****************   按实际情况作出改动
   type-aliases-package: sign.entity      #***********实体类包路径*****************   按实际情况作出改动

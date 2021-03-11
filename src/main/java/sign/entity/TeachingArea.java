@@ -6,8 +6,10 @@ import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
@@ -20,6 +22,8 @@ import lombok.experimental.Accessors;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
 @Accessors(chain = true)
 @ApiModel(value="TeachingArea对象", description="教学区")
 public class TeachingArea implements Serializable {
@@ -33,13 +37,13 @@ public class TeachingArea implements Serializable {
     private String name;
 
     @ApiModelProperty(value = "经度")
-    private Double longitude;
+    private Double lng;
 
     @ApiModelProperty(value = "纬度")
-    private Double latitude;
+    private Double lat;
 
     @ApiModelProperty(value = "范围 ")
-    private Double limits;
+    private Double radius;
 
 
 }

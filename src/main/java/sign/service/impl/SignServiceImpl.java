@@ -6,6 +6,8 @@ import sign.service.SignService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  * 签到信息 服务实现类

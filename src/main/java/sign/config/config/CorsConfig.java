@@ -4,7 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import sign.common.contant.ProjectConstant;
 
 @Configuration
 public class CorsConfig  implements WebMvcConfigurer {
@@ -23,5 +25,8 @@ public class CorsConfig  implements WebMvcConfigurer {
             }
         };
     }
-
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(ProjectConstant.REASON_IMAGE_PATH+"**").addResourceLocations("file:"+ProjectConstant.REASON_IMAGE_PATH);
+    }
 }

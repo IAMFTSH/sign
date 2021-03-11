@@ -59,8 +59,6 @@ public class AccountController {
     @Autowired
     JWTUtils jwtUtils;
     @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
     RedisTemplate redisTemplate;
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -68,7 +66,6 @@ public class AccountController {
     AccountService accountService;
     @Autowired
     private DefaultKaptcha producer;
-
     @Autowired
     HttpClient httpClient;
 
@@ -86,8 +83,8 @@ public class AccountController {
         if (!str.toLowerCase().equals(imageCode.toLowerCase())) {
             return Result.error(ResultCode.UNAUTHORIZED.getCode(), "图片验证码不匹配");
         }*/
-        Collection<? extends GrantedAuthority> authorities;
-/*        try {
+/*        Collection<? extends GrantedAuthority> authorities;
+        try {
             //这里使用authenticationManager验证，最终还会用到Config中设置的userDetailsService的loadUserByUsername方法
             //也可以直接用userDetailsService进行验证，反正只是为了封装JWT信息
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
@@ -102,7 +99,6 @@ public class AccountController {
         UserDetails userDetails = User.builder().username(account.getUsername()).password(account.getPassword()).authorities(AuthorityUtils.commaSeparatedStringToAuthorityList(Integer.toString(account.getAuthority()))).build();
         String jwt = jwtUtils.createToken(userDetails);
         redisTemplate.opsForValue().set("jwt:" + username, jwt, 30 * 60, TimeUnit.SECONDS);
-
         return Result.success(jwt);
     }
 
@@ -268,6 +264,7 @@ public class AccountController {
         if(authority!=0) {
             queryWrapper.eq("authority", authority);
         }
+        queryWrapper.orderByAsc("id");
         Page<Account> page = new Page<>(pageNum, 10);
         accountService.page(page, queryWrapper);
         for(Account account:page.getRecords()){
@@ -302,6 +299,13 @@ public class AccountController {
     @DeleteMapping("deleteAccount")
     public Result deleteAccount(@RequestParam("id") String id) {
         accountService.removeById(id);
+        return Result.success();
+    }
+    @PutMapping("initPassword")
+    public Result initPassword(@RequestParam("id") String id) {
+        Account account = accountService.getById(id);
+        account.setPassword(passwordEncoder.encode("123456"));
+        accountService.updateById(account);
         return Result.success();
     }
 }
