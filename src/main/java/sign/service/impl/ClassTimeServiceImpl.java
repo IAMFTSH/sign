@@ -2,6 +2,7 @@ package sign.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import sign.entity.ClassTime;
+import sign.entity.VO.ClassTimeAllInfoVo;
 import sign.entity.VO.SignAndClassTimeAndClassroomAndTeachingAreaVo;
 import sign.mapper.ClassTimeMapper;
 import sign.service.ClassTimeService;
@@ -27,5 +28,10 @@ public class ClassTimeServiceImpl extends ServiceImpl<ClassTimeMapper, ClassTime
     @Override
     public List<SignAndClassTimeAndClassroomAndTeachingAreaVo> selectSignAndClassTimeVoList(int studentId, int courseId) {
         return classTimeMapper.selectSignAndClassTimeVoList(studentId, courseId);
+    }
+
+    @Override
+    public List<ClassTimeAllInfoVo> selectClassTimeAllInfo(int classTimeId) {
+        return classTimeMapper.selectClassTimeAllInfo(classTimeId);
     }
 }

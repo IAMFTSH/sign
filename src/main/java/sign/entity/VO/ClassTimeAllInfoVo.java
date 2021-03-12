@@ -1,7 +1,5 @@
 package sign.entity.VO;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -11,21 +9,19 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import sign.entity.Sign;
 
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
  * @author 邝明山
- * on 2021/3/10 9:06
+ * on 2021/3/12 16:16
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-@ApiModel(value="SignAndClassTimeAndClassroomAndTeachinAreaVo", description="学生签到信息与上课时间")
-public class SignAndClassTimeAndClassroomAndTeachingAreaVo implements Serializable {
+@ApiModel(value = "ClassTimeAllInfo", description = "学生签到信息与上课时间")
+public class ClassTimeAllInfoVo {
     private Integer classTimeId;
 
     @ApiModelProperty(value = "课室id ")
@@ -38,13 +34,28 @@ public class SignAndClassTimeAndClassroomAndTeachingAreaVo implements Serializab
     private LocalDateTime beginTime;
 
     @ApiModelProperty(value = "签到迟到时间")
-    private LocalDateTime  lateTime;
+    private LocalDateTime lateTime;
 
     @ApiModelProperty(value = "最后签掉时间")
-    private LocalDateTime  deadline;
+    private LocalDateTime deadline;
 
     @ApiModelProperty(value = "Sign表")
     private Sign sign;
+
+    @ApiModelProperty(value = "nullNum")
+    private Integer nullNum;
+
+    @ApiModelProperty(value = "nullNum")
+    private Integer failNum;
+
+    @ApiModelProperty(value = "lateNum")
+    private Integer lateNum;
+
+    @ApiModelProperty(value = "successNum")
+    private Integer successNum;
+
+    @ApiModelProperty(value = "allNum")
+    private Integer allNum;
 
     @ApiModelProperty(value = "classroomVo")
     private ClassroomVo classroomVo;
