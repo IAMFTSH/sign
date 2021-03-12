@@ -24,4 +24,5 @@ public interface ClassroomService extends IService<Classroom> {
      * @return
      */
     public IPage<ClassroomVo> selectClassroomAndTeachingArea(Page<?> page, ClassroomDo classroomDo);
+
 }

@@ -25,10 +25,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,9 +35,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -225,8 +219,17 @@ public class AccountController {
         String body = httpClient.client(url, HttpMethod.GET, null);
         OpenId openId = JSON.toJavaObject((JSON) JSONObject.parse(body), OpenId.class);
         String encode = passwordEncoder.encode(password);
-        Account account = new Account(0, username, encode, openId.getOpenid(), 3, name, phone);
-        accountService.save(account);
+        Account account =accountService.accountSelectOne("open_id",openId.getOpenid());
+        if(account==null) {
+            account = new Account(0, username, encode, openId.getOpenid(), 3, name, phone);
+            accountService.save(account);
+        }else {
+            redisTemplate.delete("jwt:" + account.getUsername());
+            redisTemplate.delete("account:" + account.getUsername());
+            account = new Account(account.getId(), username, encode, openId.getOpenid(), 3, name, phone);
+            accountService.updateById(account);
+
+        }
         String jwt = "";
         UserDetails userDetails = User.builder().username(account.getUsername()).password(encode).authorities(account.getAuthority().toString()).build();
         jwt = jwtUtils.createToken(userDetails);

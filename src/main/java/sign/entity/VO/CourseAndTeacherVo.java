@@ -23,6 +23,7 @@ public class CourseAndTeacherVo {
     private String courseId;
     private String courseName;
     private String teacherUsername;
+    private String className;
     private String teacherName;
     private String teacherId;
 }

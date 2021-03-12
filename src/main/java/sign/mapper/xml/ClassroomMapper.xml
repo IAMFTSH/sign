@@ -17,29 +17,29 @@
         </association>
     </resultMap>
     <select id="selectClassroomAndTeachingArea" resultMap="selectClassroomAndTeachingArea"
-            >
+    >
         select classroom.id,
-        classroom.classroom_num,
-        classroom.teaching_area_id,
-        classroom.lng,
-        classroom.lat,
-        classroom.radius,
-        teaching_area.id teaching_area_id,
-        teaching_area.name,
-        teaching_area.lng teaching_area_lng,
-        teaching_area.lat teaching_area_lat,
-        teaching_area.radius teaching_area_radius
+               classroom.classroom_num,
+               classroom.teaching_area_id,
+               classroom.lng,
+               classroom.lat,
+               classroom.radius,
+               teaching_area.id     teaching_area_id,
+               teaching_area.name,
+               teaching_area.lng    teaching_area_lng,
+               teaching_area.lat    teaching_area_lat,
+               teaching_area.radius teaching_area_radius
         from classroom
-        left join teaching_area on classroom.teaching_area_id = teaching_area.id
+                     left join teaching_area on classroom.teaching_area_id = teaching_area.id
         <where>
-            <if test="classroomDo.id != null and classroomDo.id != '' and classroomDo.id!=0">
+            <if test="classroomDo.id != null and classroomDo.id != '' and classroomDo.id != 0">
                 and classroom.id = #{classroomDo.id}
             </if>
             <if test="classroomDo.classroomNum != null and classroomDo.classroomNum != ''">
-                and classroom.classroom_num like concat('%',#{classroomDo.classroomNum},'%')
+                and classroom.classroom_num like concat('%', #{classroomDo.classroomNum}, '%')
             </if>
             <if test="classroomDo.TeachingAreaName != null and classroomDo.TeachingAreaName != ''">
-                and teaching_area.name like concat('%',#{classroomDo.TeachingAreaName},'%')
+                and teaching_area.name like concat('%', #{classroomDo.TeachingAreaName}, '%')
             </if>
             <if test="classroomDo.teachingAreaId != null and classroomDo.teachingAreaId != ''">
                 and teaching_area.id = #{classroomDo.teachingAreaId}
