@@ -1,25 +1,28 @@
 package sign.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import sign.common.contant.ProjectConstant;
 import sign.common.result.Result;
 import sign.entity.ClassTime;
 import sign.entity.Sign;
 import sign.entity.TeachingArea;
+import sign.entity.VO.CaptchaVO;
+import sign.entity.VO.SignAndAccountVo;
 import sign.service.ClassTimeService;
 import sign.service.SignService;
+import sun.misc.BASE64Encoder;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -98,6 +101,36 @@ public class SignController {
         sign.setImageAddress(fileName);
         signService.updateById(sign);
         return Result.success();
+    }
+
+    @GetMapping("getSignList")
+    public Result getSignList(@RequestParam("classTimeId") int classTimeId, @RequestParam("username") String username, @RequestParam("name") String name, @RequestParam("state") int state) {
+        Page page = new Page();
+        signService.selectSignList(page, classTimeId, username, name, state);
+        return Result.success(page);
+    }
+
+    @GetMapping("getImage")
+    public Result getImage(@RequestParam("imageAddress") String imageAddress) throws IOException {
+        FileInputStream inStream = null;
+        inStream = new FileInputStream(ProjectConstant.REASON_IMAGE_PATH + imageAddress);
+
+
+//byte数组用于存放图片字节数据
+        byte[] buff = new byte[0];
+        buff = new byte[inStream.available()];
+
+        inStream.read(buff);
+        inStream.close();
+
+//设置发送到客户端的响应内容类型
+        BASE64Encoder encoder = new BASE64Encoder();
+
+        String str = "data:image/jpeg;base64,";
+        String base64Img = str + encoder.encode(buff).replace("\n", "").replace("\r", "");
+
+
+        return Result.success(base64Img);
     }
 }
 

@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="sign.mapper.SignMapper">
-
+    <select id="selectSignList" resultMap="selectSignList">
+        select sign.id, student_id, class_time_id, state, reason, image_address,phone,name,username
+        from sign join account on sign.student_id=account.id
+        <where>
+            class_time_id=#{classTimeId}
+            <if test="username != null and username != ''">
+                and username like concat('%', #{username}, '%')
+           </if>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="state != null and state!=4">
+                and state = #{state}
+            </if>
+        </where>
+    </select>
+    <resultMap id="selectSignList" type="SignAndAccountVo">
+        <id column="id" property="id"/>
+        <result column="class_time_id" property="classTimeId"/>
+        <result column="student_id" property="studentId"/>
+        <result column="state" property="state"/>
+        <result column="reason" property="reason"/>
+        <result column="image_address" property="imageAddress"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="username" property="username"/>
+    </resultMap>
 </mapper>

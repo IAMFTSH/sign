@@ -62,7 +62,7 @@
         <result column="class_time_begin_time" property="beginTime"/>
         <result column="class_time_late_time" property="lateTime"/>
         <result column="class_time_deadline" property="deadline"/>
-        <result column="fail_num" property="failNum"/>
+        <result column="success_num" property="successNum"/>
         <result column="null_num" property="nullNum"/>
         <result column="fail_num" property="failNum"/>
         <result column="late_num" property="lateNum"/>
@@ -102,15 +102,15 @@
                all_num,
                fail_num,
                late_num,
-               seccess_num,
-               all_num - fail_num - late_num - seccess_num null_num
+               success_num,
+               all_num - fail_num - late_num - success_num null_num
         FROM class_time
-                     JOIN classroom ON class_time.classroom_id = classroom.id
-                     JOIN teaching_area ON teaching_area.id = classroom.teaching_area_id
+                     left JOIN classroom ON class_time.classroom_id = classroom.id
+        left JOIN teaching_area ON teaching_area.id = classroom.teaching_area_id
                      LEFT JOIN (
                 SELECT SUM(CASE WHEN state = 1 THEN 1 ELSE 0 END) AS fail_num,
                        SUM(CASE WHEN state = 2 THEN 1 ELSE 0 END) AS late_num,
-                       SUM(CASE WHEN state = 3 THEN 1 ELSE 0 END) AS seccess_num,
+                       SUM(CASE WHEN state = 3 THEN 1 ELSE 0 END) AS success_num,
                        class_time_id                                 cnt_id
                 FROM sign
                 GROUP BY cnt_id
@@ -118,5 +118,43 @@
                      LEFT JOIN (SELECT count(*) all_num, course_id all_id FROM student_course GROUP BY course_id) all_t
                 ON all_t.all_id = class_time.course_id
         where class_time.course_id = #{courseId}
+        order by begin_time
+    </select>
+    <select id="selectOneById" resultMap="selectClassTimeAllInfo">
+        SELECT class_time.id                               class_time_id,
+        class_time.course_id                        course_id,
+        class_time.begin_time                       class_time_begin_time,
+        class_time.late_time                        class_time_late_time,
+        class_time.deadline                         class_time_deadline,
+        classroom.id                                classroom_id,
+        classroom.classroom_num                     classroom_num,
+        classroom.lng                               classroom_lng,
+        classroom.lat                               classroom_lat,
+        classroom.radius                            classroom_radius,
+        teaching_area.id                            teaching_area_id,
+        teaching_area.NAME                          teaching_area_name,
+        teaching_area.lng                           teaching_area_lng,
+        teaching_area.lat                           teaching_area_lat,
+        teaching_area.radius                        teaching_area_radius,
+        all_num,
+        fail_num,
+        late_num,
+        success_num,
+        all_num - fail_num - late_num - success_num null_num
+        FROM class_time
+        JOIN classroom ON class_time.classroom_id = classroom.id
+        JOIN teaching_area ON teaching_area.id = classroom.teaching_area_id
+        LEFT JOIN (
+        SELECT SUM(CASE WHEN state = 1 THEN 1 ELSE 0 END) AS fail_num,
+        SUM(CASE WHEN state = 2 THEN 1 ELSE 0 END) AS late_num,
+        SUM(CASE WHEN state = 3 THEN 1 ELSE 0 END) AS success_num,
+        class_time_id                                 cnt_id
+        FROM sign
+        GROUP BY cnt_id
+        ) cnt ON cnt.cnt_id = class_time.id
+        LEFT JOIN (SELECT count(*) all_num, course_id all_id FROM student_course GROUP BY course_id) all_t
+        ON all_t.all_id = class_time.course_id
+        where class_time.id = #{id}
+
     </select>
 </mapper>

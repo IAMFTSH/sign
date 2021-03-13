@@ -1,18 +1,26 @@
 package sign.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import sign.common.result.Result;
+import sign.entity.ClassTime;
 import sign.entity.VO.ClassTimeAllInfoVo;
 import sign.entity.VO.SignAndClassTimeAndClassroomAndTeachingAreaVo;
 import sign.service.ClassTimeService;
+import sign.service.SignService;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,7 +36,8 @@ import java.util.List;
 public class ClassTimeController {
     @Autowired
     ClassTimeService classTimeService;
-
+    @Autowired
+    SignService signService;
     @GetMapping("getSignAndClassTimeVoList")
     public Result getSignAndClassTimeVoList(@RequestParam("courseId") int courseId, @RequestParam("studentId") int studentId) {
         List<SignAndClassTimeAndClassroomAndTeachingAreaVo> signAndClassTimeAndClassroomAndTeachingAreaVoList = classTimeService.selectSignAndClassTimeVoList(studentId, courseId);
@@ -36,11 +45,49 @@ public class ClassTimeController {
     }
 
     @GetMapping("getClassTimeAllInfo")
-    public Result getClassTimeAllInfo(@RequestParam("pageNum") int pageNum,@RequestParam("courseId") int courseId) {
-        Page page=new Page(pageNum,10);
-        classTimeService.selectClassTimeAllInfo(page,courseId);
+    public Result getClassTimeAllInfo(@RequestParam("pageNum") int pageNum, @RequestParam("courseId") int courseId) {
+        Page page = new Page(pageNum, 10);
+        classTimeService.selectClassTimeAllInfo(page, courseId);
         return Result.success(page);
     }
 
+    @PostMapping("postClassTime")
+    public Result postClassTime(@RequestParam("classroomId") int classroomId, @RequestParam("courseId") int courseId, @RequestParam("beginTime") long beginTime, @RequestParam("lateTime") long lateTime, @RequestParam("deadline") long deadline) {
+        Date begin=new Date(beginTime);
+        Date late=new Date(lateTime);
+        Date dead=new Date(deadline);
+        LocalDateTime beginTimeDate = LocalDateTime.ofInstant(begin.toInstant(), ZoneId.of("Asia/Shanghai"));
+        LocalDateTime lateTimeDate = LocalDateTime.ofInstant(late.toInstant(), ZoneId.of("Asia/Shanghai"));
+        LocalDateTime deadlineDate = LocalDateTime.ofInstant(dead.toInstant(), ZoneId.of("Asia/Shanghai"));
+        System.out.println(beginTimeDate);
+        ClassTime classTime = new ClassTime(0, classroomId, courseId, beginTimeDate, lateTimeDate, deadlineDate);
+        classTimeService.save(classTime);
+        ClassTimeAllInfoVo classTimeAllInfoVo = classTimeService.selectOneById(classTime.getId());
+        return Result.success(classTimeAllInfoVo);
+    }
+
+    @PutMapping("putClassTime")
+    public Result putClassTime(@RequestParam("classTimeId") int classTimeId,@RequestParam("classroomId") int classroomId, @RequestParam("courseId") int courseId, @RequestParam("beginTime") long beginTime, @RequestParam("lateTime") long lateTime, @RequestParam("deadline") long deadline)  {
+        Date begin=new Date(beginTime);
+        Date late=new Date(lateTime);
+        Date dead=new Date(deadline);
+        LocalDateTime beginTimeDate = LocalDateTime.ofInstant(begin.toInstant(), ZoneId.of("Asia/Shanghai"));
+        LocalDateTime lateTimeDate = LocalDateTime.ofInstant(late.toInstant(), ZoneId.of("Asia/Shanghai"));
+        LocalDateTime deadlineDate = LocalDateTime.ofInstant(dead.toInstant(), ZoneId.of("Asia/Shanghai"));
+        System.out.println(beginTimeDate);
+        ClassTime classTime = new ClassTime(classTimeId, classroomId, courseId, beginTimeDate, lateTimeDate, deadlineDate);
+        classTimeService.save(classTime);
+        ClassTimeAllInfoVo classTimeAllInfoVo = classTimeService.selectOneById(classTime.getId());
+        return Result.success(classTimeAllInfoVo);
+    }
+    @DeleteMapping("deleteClassTime")
+    @Transactional
+    public Result deleteClassTime(@RequestParam("classTimeId") int classTimeId)  {
+        QueryWrapper signQueryWrapper=new QueryWrapper();
+        signQueryWrapper.eq("class_time_id",classTimeId);
+        signService.remove(signQueryWrapper);
+        classTimeService.removeById(classTimeId);
+        return Result.success();
+    }
 }
 

@@ -29,12 +29,20 @@ public interface ClassTimeMapper extends BaseMapper<ClassTime> {
      * @return
      */
     List<SignAndClassTimeAndClassroomAndTeachingAreaVo> selectSignAndClassTimeVoList(@Param("studentId") int studentId, @Param("courseId") int courseId);
+
     /**
      * 搜索
      *
      * @param courseId
-     * @return*/
+     * @return
+     */
 
-    IPage<ClassTimeAllInfoVo> selectClassTimeAllInfo(Page<?> page,@Param("courseId")int courseId);
+    IPage<ClassTimeAllInfoVo> selectClassTimeAllInfo(Page<?> page, @Param("courseId") int courseId);
 
+    /**
+     *
+     * @param id
+     * @return
+     */
+    ClassTimeAllInfoVo selectOneById(@Param("id") int id);
 }

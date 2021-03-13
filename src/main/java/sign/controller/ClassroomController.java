@@ -38,6 +38,13 @@ public class ClassroomController {
         return Result.success(page);
     }
 
+    @GetMapping("getClassroomAll")
+    public Result getClassroomAll() {
+        List<Classroom> list = classroomService.list();
+        return Result.success(list);
+    }
+
+
     @PostMapping("postClassroom")
     public Result PostTeachingArea(@RequestParam("teachingAreaId") int teachingAreaId,@RequestParam("classroomNum") String classroomNum, @RequestParam("lng") Double lng, @RequestParam("lat") Double lat, @RequestParam("radius") Double radius) {
         Classroom classroom = new Classroom(0, classroomNum, teachingAreaId, lng, lat, radius);

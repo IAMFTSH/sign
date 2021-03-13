@@ -33,4 +33,11 @@ public interface ClassTimeService extends IService<ClassTime> {
      * @return
      */
     public IPage<ClassTimeAllInfoVo> selectClassTimeAllInfo(Page<?> page, int courseId);
+
+    /**
+     * ss
+     * @param id
+     * @return
+     */
+    public ClassTimeAllInfoVo selectOneById(int id);
 }

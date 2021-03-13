@@ -36,4 +36,13 @@ public class ClassTimeServiceImpl extends ServiceImpl<ClassTimeMapper, ClassTime
     public IPage<ClassTimeAllInfoVo> selectClassTimeAllInfo(Page<?> page, int courseId) {
         return classTimeMapper.selectClassTimeAllInfo(page,courseId);
     }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public ClassTimeAllInfoVo selectOneById(int id) {
+        return classTimeMapper.selectOneById(id);
+    }
 }
