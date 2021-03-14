@@ -4,6 +4,7 @@ package sign.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,7 @@ public class ClassTimeController {
     }
 
     @GetMapping("getClassTimeAllInfo")
+    @PreAuthorize("hasAnyAuthority('1','2')")
     public Result getClassTimeAllInfo(@RequestParam("pageNum") int pageNum, @RequestParam("courseId") int courseId) {
         Page page = new Page(pageNum, 10);
         classTimeService.selectClassTimeAllInfo(page, courseId);
@@ -52,6 +54,7 @@ public class ClassTimeController {
     }
 
     @PostMapping("postClassTime")
+    @PreAuthorize("hasAnyAuthority('1')")
     public Result postClassTime(@RequestParam("classroomId") int classroomId, @RequestParam("courseId") int courseId, @RequestParam("beginTime") long beginTime, @RequestParam("lateTime") long lateTime, @RequestParam("deadline") long deadline) {
         Date begin=new Date(beginTime);
         Date late=new Date(lateTime);
@@ -67,6 +70,7 @@ public class ClassTimeController {
     }
 
     @PutMapping("putClassTime")
+    @PreAuthorize("hasAnyAuthority('1')")
     public Result putClassTime(@RequestParam("classTimeId") int classTimeId,@RequestParam("classroomId") int classroomId, @RequestParam("courseId") int courseId, @RequestParam("beginTime") long beginTime, @RequestParam("lateTime") long lateTime, @RequestParam("deadline") long deadline)  {
         Date begin=new Date(beginTime);
         Date late=new Date(lateTime);
@@ -81,6 +85,7 @@ public class ClassTimeController {
         return Result.success(classTimeAllInfoVo);
     }
     @DeleteMapping("deleteClassTime")
+    @PreAuthorize("hasAnyAuthority('1')")
     @Transactional
     public Result deleteClassTime(@RequestParam("classTimeId") int classTimeId)  {
         QueryWrapper signQueryWrapper=new QueryWrapper();

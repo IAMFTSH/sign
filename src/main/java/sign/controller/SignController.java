@@ -1,10 +1,10 @@
 package sign.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -12,13 +12,9 @@ import sign.common.contant.ProjectConstant;
 import sign.common.result.Result;
 import sign.entity.ClassTime;
 import sign.entity.Sign;
-import sign.entity.TeachingArea;
-import sign.entity.VO.CaptchaVO;
 import sign.entity.VO.NumericalVo;
-import sign.entity.VO.SignAndAccountVo;
 import sign.service.ClassTimeService;
 import sign.service.SignService;
-import sun.misc.BASE64Encoder;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -44,6 +40,7 @@ public class SignController {
     ClassTimeService classTimeService;
 
     @PostMapping("sign")
+    @PreAuthorize("hasAnyAuthority('1')")
     public Result PostTeachingArea(@RequestParam("classTimeId") int classTimeId, @RequestParam("studentId") int studentId, @RequestParam("signId") int signId) {
         ClassTime classTime = classTimeService.getById(classTimeId);
         Sign sign = signService.getById(signId);
@@ -105,6 +102,7 @@ public class SignController {
     }
 
     @GetMapping("getSignList")
+    @PreAuthorize("hasAnyAuthority('1','2')")
     public Result getSignList(@RequestParam("classTimeId") int classTimeId, @RequestParam("username") String username, @RequestParam("name") String name, @RequestParam("state") int state) {
         Page page = new Page();
         signService.selectSignList(page, classTimeId, username, name, state);
@@ -112,6 +110,7 @@ public class SignController {
     }
 
     @PutMapping("putState")
+    @PreAuthorize("hasAnyAuthority('1','2')")
     public Result putState(@RequestParam("signId") int signId,  @RequestParam("state") int state) {
         Sign sign = signService.getById(signId);
         sign.setState(state);
@@ -120,6 +119,7 @@ public class SignController {
     }
 
     @GetMapping("getNumerical")
+    @PreAuthorize("hasAnyAuthority('1','2')")
     public Result getNumerical(@RequestParam("courseId") int courseId) {
         List<NumericalVo> numerical = signService.numerical(courseId);
         return Result.success(numerical);
@@ -139,10 +139,10 @@ public class SignController {
         inStream.close();
 
 //设置发送到客户端的响应内容类型
-        BASE64Encoder encoder = new BASE64Encoder();
+        Base64 encoder = new Base64();
 
         String str = "data:image/jpeg;base64,";
-        String base64Img = str + encoder.encode(buff).replace("\n", "").replace("\r", "");
+        String base64Img = str + encoder.encodeToString(buff);
 
 
         return Result.success(base64Img);

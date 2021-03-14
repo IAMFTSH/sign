@@ -2,19 +2,18 @@ package sign.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.checkerframework.checker.units.qual.A;
+import io.netty.handler.codec.base64.Base64Encoder;
+import org.apache.commons.codec.EncoderException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import sign.common.contant.ProjectConstant;
-import sign.common.contant.SecurityConstant;
 import sign.common.result.Result;
 import sign.common.result.ResultCode;
-import sign.common.util.StringUtils;
 import sign.config.util.JWTUtils;
 import sign.entity.Account;
 import sign.entity.Sign;
-import sign.entity.StudentCourse;
 import sign.entity.VO.CaptchaVO;
 import sign.entity.VO.OpenId;
 import sign.service.*;
@@ -31,16 +30,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import sun.misc.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
 
+import java.util.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -130,10 +126,12 @@ public class AccountController {
         outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "jpg", outputStream);
         // 对字节数组Base64编码
-        BASE64Encoder encoder = new BASE64Encoder();
+        Base64 encoder = new Base64();
 
         String str = "data:image/jpeg;base64,";
-        String base64Img = str + encoder.encode(outputStream.toByteArray()).replace("\n", "").replace("\r", "");
+        String base64Img = null;
+        base64Img = str + encoder.encodeToString(outputStream.toByteArray());
+
 
         CaptchaVO captchaVO = captchaService.cacheCaptcha(content);
         captchaVO.setBase64Img(base64Img);
@@ -263,6 +261,7 @@ public class AccountController {
     }
 
     @GetMapping("accountsBySomething")
+    @PreAuthorize("hasAnyAuthority('1')")
     public Result accountsBySomething(String name, String username, String phone, int authority, @RequestParam("pageNum") int pageNum) {
 
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -303,6 +302,7 @@ public class AccountController {
     }
 
     @PostMapping("postAccount")
+    @PreAuthorize("hasAnyAuthority('1')")
     public Result postAccount(@RequestParam("id") String id, @RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("phone") String phone, @RequestParam("authority") int authority) {
         Account account = new Account();
         account.setName(name);
@@ -315,6 +315,7 @@ public class AccountController {
     }
 
     @DeleteMapping("deleteAccount")
+    @PreAuthorize("hasAnyAuthority('1')")
     @Transactional(rollbackFor = RuntimeException.class)
     public Result deleteAccount(@RequestParam("id") String id) {
         Account account = accountService.getById(id);
@@ -350,6 +351,7 @@ public class AccountController {
 
 
     @PutMapping("initPassword")
+    @PreAuthorize("hasAnyAuthority('1')")
     public Result initPassword(@RequestParam("id") String id) {
         Account account = accountService.getById(id);
         account.setPassword(passwordEncoder.encode("123456"));

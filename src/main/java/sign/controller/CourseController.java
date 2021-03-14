@@ -4,6 +4,7 @@ package sign.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +46,7 @@ public class CourseController {
     @Autowired
     SignService signService;
     @GetMapping("getCourseAndNumerical")
+    @PreAuthorize("hasAnyAuthority('1','2')")
     public Result selectCourseAndNumerical(){
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         Account account = (Account) redisTemplate.opsForValue().get("account:" + username);
@@ -53,6 +55,7 @@ public class CourseController {
     }
 
     @PutMapping("putCourse")
+    @PreAuthorize("hasAnyAuthority('1','2')")
     public Result putCourse(@RequestParam("courseId") int courseId,@RequestParam("name") String name,@RequestParam("className") String className){
         Course course = courseService.getById(courseId);
         course.setClassName(className);
@@ -62,6 +65,7 @@ public class CourseController {
     }
 
     @PostMapping("postCourse")
+    @PreAuthorize("hasAnyAuthority('1','2')")
     public Result postCourse(@RequestParam("name") String name,@RequestParam("className") String className){
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         Account account = (Account) redisTemplate.opsForValue().get("account:" + username);
@@ -71,6 +75,7 @@ public class CourseController {
     }
 
     @DeleteMapping("deleteCourse")
+    @PreAuthorize("hasAnyAuthority('1','2')")
     @Transactional(rollbackFor = {RuntimeException.class})
     public Result deleteCourse(@RequestParam("courseId") int courseId){
         QueryWrapper queryWrapper=new QueryWrapper();

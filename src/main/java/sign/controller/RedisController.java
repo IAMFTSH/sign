@@ -4,6 +4,7 @@ package sign.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import sign.common.result.Result;
@@ -28,6 +29,7 @@ public class RedisController {
     CourseService courseService;
 
     @PutMapping("putFingerPrint")
+    @PreAuthorize("hasAnyAuthority('1','2')")
     public Result putFingerPrint(@RequestParam("courseId") int id,@RequestParam("teacherId") int teacher_id,@RequestParam("isOpen") Boolean isOpen){
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("id",id);
