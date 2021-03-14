@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import sign.common.result.Result;
 import sign.entity.Account;
+import sign.entity.Classroom;
 import sign.entity.TeachingArea;
+import sign.service.ClassroomService;
 import sign.service.TeachingAreaService;
 
 import java.util.List;
@@ -26,6 +28,9 @@ import java.util.List;
 public class TeachingAreaController {
     @Autowired
     TeachingAreaService teachingAreaService;
+
+    @Autowired
+    ClassroomService classroomService;
 
     @GetMapping("teachingAreaByNameOrId")
     public Result accountsBySomething(int id,String name, @RequestParam("pageNum") int pageNum) {
@@ -57,6 +62,12 @@ public class TeachingAreaController {
     }
     @DeleteMapping("deleteTeachingArea")
     public Result DeleteTeachingArea(@RequestParam("id") String id) {
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq("teaching_area_id",id);
+        List<Classroom> list = classroomService.list(queryWrapper);
+        if(list!=null&&list.size()>0){
+            return Result.success("删除失败，当前教学区被课室引用");
+        }
         teachingAreaService.removeById(id);
         return Result.success();
     }

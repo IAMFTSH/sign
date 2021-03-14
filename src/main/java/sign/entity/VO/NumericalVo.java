@@ -2,6 +2,7 @@ package sign.entity.VO;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,27 +21,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-@ApiModel(value = "ClassTimeAllInfo", description = "学生签到信息与上课时间")
-public class ClassTimeAllInfoVo {
-    private Integer classTimeId;
+@ApiModel(value = "NumericalVo", description = "学生签到信息与上课时间")
+public class NumericalVo {
+    private Integer id;
 
-    @ApiModelProperty(value = "课室id ")
-    private Integer classroomId;
+    private String username;
 
-    @ApiModelProperty(value = "课程id")
-    private Integer courseId;
+    private String name;
 
-    @ApiModelProperty(value = "签到开始时间")
-    private LocalDateTime beginTime;
-
-    @ApiModelProperty(value = "签到迟到时间")
-    private LocalDateTime lateTime;
-
-    @ApiModelProperty(value = "最后签掉时间")
-    private LocalDateTime deadline;
-
-    @ApiModelProperty(value = "Sign表")
-    private Sign sign;
+    private String phone;
 
     @ApiModelProperty(value = "nullNum")
     private Integer nullNum;
@@ -57,6 +46,7 @@ public class ClassTimeAllInfoVo {
     @ApiModelProperty(value = "allNum")
     private Integer allNum;
 
-    @ApiModelProperty(value = "classroomVo")
-    private ClassroomVo classroomVo;
+    @ApiModelProperty(value = "notPassNum")
+    private Integer notPassNum;
+
 }

@@ -2,17 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="sign.mapper.SignMapper">
     <select id="selectSignList" resultMap="selectSignList">
-        select sign.id, student_id, class_time_id, state, reason, image_address,phone,name,username
-        from sign join account on sign.student_id=account.id
+        select sign.id,
+               student_id,
+               class_time_id,
+               state,
+               reason,
+               image_address,
+               phone,
+               name,
+               username
+        from sign
+                     join account on sign.student_id = account.id
         <where>
-            class_time_id=#{classTimeId}
+            class_time_id = #{classTimeId}
             <if test="username != null and username != ''">
                 and username like concat('%', #{username}, '%')
-           </if>
+            </if>
             <if test="name != null and name != ''">
                 and name like concat('%', #{name}, '%')
             </if>
-            <if test="state != null and state!=4">
+            <if test="state != null and state != 4">
                 and state = #{state}
             </if>
         </where>
@@ -28,4 +37,53 @@
         <result column="phone" property="phone"/>
         <result column="username" property="username"/>
     </resultMap>
+
+    <resultMap id="numerical" type="NumericalVo">
+        <result column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="null_num" property="nullNum"/>
+        <result column="fail_num" property="failNum"/>
+        <result column="late_num" property="lateNum"/>
+        <result column="success_num" property="successNum"/>
+        <result column="fail_num" property="allNum"/>
+        <result column="not_pass_num" property="notPassNum"/>
+        <result column="all_ct_num" property="allNum"/>
+    </resultMap>
+    <select id="numerical" resultMap="numerical">
+        SELECT account.id,
+               account.username,
+               account.name,
+               account.phone,
+               fail_num,
+               late_num,
+               success_num,
+               all_ct_num - fail_num - late_num - success_num null_num,
+               all_ct_num - success_num                       not_pass_num,
+               all_ct_num
+
+
+        FROM student_course
+                     LEFT JOIN course ON student_course.course_id = course.id
+                     JOIN account ON student_course.student_id = account.id
+                     LEFT JOIN (
+                SELECT SUM(CASE WHEN state = 1 THEN 1 ELSE 0 END) AS fail_num,
+                       SUM(CASE WHEN state = 2 THEN 1 ELSE 0 END) AS late_num,
+                       SUM(CASE WHEN state = 3 THEN 1 ELSE 0 END) AS success_num,
+                       student_id                                    cnt_stu_id,
+                       course_id
+                FROM sign
+                             JOIN class_time ON class_time.id = sign.class_time_id
+                GROUP BY cnt_stu_id,
+                         course_id
+                ) AS cnt ON (student_course.student_id = cnt.cnt_stu_id and student_course.course_id = cnt.course_id)
+                     JOIN (
+                SELECT count(course_id) all_ct_num, course_id
+                FROM class_time
+                GROUP BY course_id) AS ct ON
+                student_course.course_id = ct.course_id
+        WHERE student_course.course_id = #{arg0}
+        order by account.username
+    </select>
 </mapper>

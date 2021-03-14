@@ -14,6 +14,7 @@ import sign.entity.ClassTime;
 import sign.entity.Sign;
 import sign.entity.TeachingArea;
 import sign.entity.VO.CaptchaVO;
+import sign.entity.VO.NumericalVo;
 import sign.entity.VO.SignAndAccountVo;
 import sign.service.ClassTimeService;
 import sign.service.SignService;
@@ -108,6 +109,20 @@ public class SignController {
         Page page = new Page();
         signService.selectSignList(page, classTimeId, username, name, state);
         return Result.success(page);
+    }
+
+    @PutMapping("putState")
+    public Result putState(@RequestParam("signId") int signId,  @RequestParam("state") int state) {
+        Sign sign = signService.getById(signId);
+        sign.setState(state);
+        signService.updateById(sign);
+        return Result.success(sign);
+    }
+
+    @GetMapping("getNumerical")
+    public Result getNumerical(@RequestParam("courseId") int courseId) {
+        List<NumericalVo> numerical = signService.numerical(courseId);
+        return Result.success(numerical);
     }
 
     @GetMapping("getImage")

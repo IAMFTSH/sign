@@ -28,7 +28,7 @@ public class RedisController {
     CourseService courseService;
 
     @PutMapping("putFingerPrint")
-    public Result putFingerPrint(@RequestParam("courseId") int id,@RequestParam("teacher_id") int teacher_id,@RequestParam("isOpen") Boolean isOpen){
+    public Result putFingerPrint(@RequestParam("courseId") int id,@RequestParam("teacherId") int teacher_id,@RequestParam("isOpen") Boolean isOpen){
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("id",id);
         queryWrapper.eq("teacher_id",teacher_id);
@@ -44,8 +44,11 @@ public class RedisController {
     @GetMapping("getFingerPrint")
     public Result getFingerPrint(@RequestParam("courseId") int courseId){
             Boolean fingerPrint =(Boolean) redisTemplate.opsForValue().get("courseFingerPrint:" + courseId);
-        System.out.println(redisTemplate.opsForValue().get("courseFingerPrint:" + courseId));
-            if(fingerPrint==null||fingerPrint==false) {
+            if(fingerPrint==null){
+                redisTemplate.opsForValue().set("courseFingerPrint:" + courseId,false);
+                return Result.success(false);
+            }
+            if(fingerPrint==false) {
                 return Result.success(false);
             }
             return Result.success(true);

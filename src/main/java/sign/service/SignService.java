@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import sign.entity.Sign;
 import com.baomidou.mybatisplus.extension.service.IService;
+import sign.entity.VO.NumericalVo;
 import sign.entity.VO.SignAndAccountVo;
 
 import java.util.List;
@@ -23,4 +24,10 @@ public interface SignService extends IService<Sign> {
      * @return
      */
     public IPage<SignAndAccountVo> selectSignList(Page page, int classTimeId, String username, String name, int state);
+    /**
+     * 搜
+     * @param courseId
+     * @return
+     */
+    public List<NumericalVo> numerical(int courseId);
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import sign.entity.Sign;
+import sign.entity.VO.NumericalVo;
 import sign.entity.VO.SignAndAccountVo;
 import sign.mapper.SignMapper;
 import sign.service.SignService;
@@ -26,8 +27,14 @@ public class SignServiceImpl extends ServiceImpl<SignMapper, Sign> implements Si
 
     @Autowired
     private SignMapper signMapper;
+
     @Override
     public IPage<SignAndAccountVo> selectSignList(Page page, int classTimeId, String username, String name, int state) {
-        return signMapper.selectSignList(page,classTimeId,username,name,state);
+        return signMapper.selectSignList(page, classTimeId, username, name, state);
+    }
+
+    @Override
+    public List<NumericalVo> numerical(int courseId) {
+        return signMapper.numerical(courseId);
     }
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import sign.common.contant.ProjectConstant;
 import sign.common.contant.SecurityConstant;
 import sign.common.result.Result;
@@ -12,10 +13,11 @@ import sign.common.result.ResultCode;
 import sign.common.util.StringUtils;
 import sign.config.util.JWTUtils;
 import sign.entity.Account;
+import sign.entity.Sign;
+import sign.entity.StudentCourse;
 import sign.entity.VO.CaptchaVO;
 import sign.entity.VO.OpenId;
-import sign.service.AccountService;
-import sign.service.HttpClient;
+import sign.service.*;
 import sign.service.impl.CaptchaService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -35,7 +37,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -60,6 +64,14 @@ public class AccountController {
     AccountService accountService;
     @Autowired
     private DefaultKaptcha producer;
+
+    @Autowired
+    CourseService courseService;
+    @Autowired
+    SignService signService;
+    @Autowired
+    StudentCourseService studentCourseService;
+
     @Autowired
     HttpClient httpClient;
 
@@ -219,11 +231,11 @@ public class AccountController {
         String body = httpClient.client(url, HttpMethod.GET, null);
         OpenId openId = JSON.toJavaObject((JSON) JSONObject.parse(body), OpenId.class);
         String encode = passwordEncoder.encode(password);
-        Account account =accountService.accountSelectOne("open_id",openId.getOpenid());
-        if(account==null) {
+        Account account = accountService.accountSelectOne("open_id", openId.getOpenid());
+        if (account == null) {
             account = new Account(0, username, encode, openId.getOpenid(), 3, name, phone);
             accountService.save(account);
-        }else {
+        } else {
             redisTemplate.delete("jwt:" + account.getUsername());
             redisTemplate.delete("account:" + account.getUsername());
             account = new Account(account.getId(), username, encode, openId.getOpenid(), 3, name, phone);
@@ -264,20 +276,21 @@ public class AccountController {
         if (phone.length() != 0) {
             queryWrapper.like("phone", phone);
         }
-        if(authority!=0) {
+        if (authority != 0) {
             queryWrapper.eq("authority", authority);
         }
         queryWrapper.orderByAsc("id");
         Page<Account> page = new Page<>(pageNum, 10);
         accountService.page(page, queryWrapper);
-        for(Account account:page.getRecords()){
+        for (Account account : page.getRecords()) {
             account.setPassword(null);
             account.setOpenId(null);
         }
         return Result.success(page);
     }
+
     @PutMapping("putAccount")
-    public Result putAccount(@RequestParam("id") String id,@RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("phone") String phone,@RequestParam("authority")  int authority) {
+    public Result putAccount(@RequestParam("id") String id, @RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("phone") String phone, @RequestParam("authority") int authority) {
         Account account = accountService.getById(id);
         redisTemplate.delete("jwt:" + account.getUsername());
         redisTemplate.delete("account:" + account.getUsername());
@@ -288,9 +301,10 @@ public class AccountController {
         accountService.updateById(account);
         return Result.success();
     }
+
     @PostMapping("postAccount")
-    public Result postAccount(@RequestParam("id") String id,@RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("phone") String phone,@RequestParam("authority")  int authority) {
-        Account account=new Account();
+    public Result postAccount(@RequestParam("id") String id, @RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("phone") String phone, @RequestParam("authority") int authority) {
+        Account account = new Account();
         account.setName(name);
         account.setUsername(username);
         account.setPhone(phone);
@@ -299,11 +313,42 @@ public class AccountController {
         accountService.save(account);
         return Result.success(account.getId());
     }
+
     @DeleteMapping("deleteAccount")
+    @Transactional(rollbackFor = RuntimeException.class)
     public Result deleteAccount(@RequestParam("id") String id) {
+        Account account = accountService.getById(id);
+        if (account.getAuthority() == 2) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("teacher_id", id);
+            List list = courseService.list(queryWrapper);
+            System.out.println(list);
+            if (list.size() > 0) {
+                return Result.success("该教师账号还有课程，无法删除");
+            }
+            accountService.removeById(id);
+            return Result.success();
+        } else if (account.getAuthority() == 3) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("student_id", id);
+            List<Sign> signList = signService.list(queryWrapper);
+            List signIdList = new ArrayList();
+            if (signList.size() > 0) {
+                for (Sign sign : signList) {
+                    signIdList.add(sign.getId());
+                }
+                signService.removeByIds(signIdList);
+            }
+
+            studentCourseService.remove(queryWrapper);
+            accountService.removeById(id);
+            return Result.success();
+        }
         accountService.removeById(id);
         return Result.success();
     }
+
+
     @PutMapping("initPassword")
     public Result initPassword(@RequestParam("id") String id) {
         Account account = accountService.getById(id);

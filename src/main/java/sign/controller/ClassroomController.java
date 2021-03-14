@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import sign.common.result.Result;
+import sign.entity.ClassTime;
 import sign.entity.Classroom;
 import sign.entity.Do.ClassroomDo;
 import sign.entity.TeachingArea;
 import sign.entity.VO.ClassroomVo;
+import sign.service.ClassTimeService;
 import sign.service.ClassroomService;
 
 import java.util.List;
@@ -29,6 +31,9 @@ public class ClassroomController {
 
     @Autowired
     ClassroomService classroomService;
+
+        @Autowired
+        ClassTimeService classTimeService;
 
     @GetMapping("getClassroomAndTeachingAreaBySomething")
     public Result getClassroomAndTeachingAreaBySomething(int id, String classroomNum, int teachingAreaId, String teachingAreaName, @RequestParam("pageNum") int pageNum) {
@@ -54,6 +59,12 @@ public class ClassroomController {
 
     @DeleteMapping("deleteClassroom")
     public Result DeleteClassroom(@RequestParam("id") String id) {
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq("classroom_id",id);
+        List<ClassTime> list = classTimeService.list(queryWrapper);
+        if(list!=null&&list.size()>0){
+            return Result.success("删除失败，当前课室被教师引用");
+        }
         classroomService.removeById(id);
         return Result.success();
     }
